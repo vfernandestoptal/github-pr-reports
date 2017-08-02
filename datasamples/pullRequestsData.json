@@ -1,0 +1,125 @@
+{
+    "organization": "angular",
+    "repository": "angular",
+    "startDate": "2017-07-28T00:00:00.000Z",
+    "endDate": "2017-07-28T23:59:59.999Z",
+    "pullRequests": [
+        {
+            "author": "jasonaden",
+            "createdAt": "2017-07-28T23:33:42.000Z",
+            "mergedAt": "2017-08-01T17:44:01.000Z",
+            "mergedBy": "alxhub",
+            "baseRefName": "master",
+            "headRefName": "feat_route_events",
+            "state": "MERGED",
+            "reviews": [
+                {
+                    "user": "vicb",
+                    "assignedAt": "2017-07-28T23:33:45.000Z",
+                    "submittedAt": "2017-07-31T17:11:30.000Z",
+                    "state": "COMMENTED",
+                    "createdAt": "2017-07-28T23:33:42.000Z"
+                },
+                {
+                    "user": "IgorMinar",
+                    "submittedAt": "2017-07-31T18:51:03.000Z",
+                    "state": "CHANGES_REQUESTED",
+                    "createdAt": "2017-07-28T23:33:42.000Z"
+                }
+            ]
+        },
+        {
+            "author": "chuckjaz",
+            "createdAt": "2017-07-28T22:58:33.000Z",
+            "mergedAt": "2017-07-31T20:42:32.000Z",
+            "mergedBy": "alxhub",
+            "baseRefName": "master",
+            "headRefName": "issue17467",
+            "state": "MERGED",
+            "reviews": [
+                {
+                    "user": "vicb",
+                    "submittedAt": "2017-07-28T23:17:38.000Z",
+                    "state": "APPROVED",
+                    "createdAt": "2017-07-28T22:58:33.000Z"
+                }
+            ]
+        },
+        {
+            "author": "tiangolo",
+            "createdAt": "2017-07-28T20:35:13.000Z",
+            "baseRefName": "master",
+            "headRefName": "patch-1",
+            "state": "OPEN",
+            "reviews": [
+                {
+                    "user": "petebacondarwin",
+                    "submittedAt": "2017-07-29T11:06:09.000Z",
+                    "state": "COMMENTED",
+                    "createdAt": "2017-07-28T20:35:13.000Z"
+                }
+            ]
+        },
+        {
+            "author": "pkozlowski-opensource",
+            "createdAt": "2017-07-28T15:23:31.000Z",
+            "baseRefName": "master",
+            "headRefName": "no_whitespace",
+            "state": "OPEN",
+            "reviews": [
+                {
+                    "user": "vicb",
+                    "submittedAt": "2017-07-28T16:14:00.000Z",
+                    "state": "COMMENTED",
+                    "createdAt": "2017-07-28T15:23:31.000Z"
+                },
+                {
+                    "user": "mhevery",
+                    "submittedAt": "2017-08-01T17:17:41.000Z",
+                    "state": "DISMISSED",
+                    "createdAt": "2017-07-28T15:23:31.000Z"
+                }
+            ]
+        },
+        {
+            "author": "gkalpak",
+            "createdAt": "2017-07-28T15:04:18.000Z",
+            "mergedAt": "2017-07-28T22:29:00.000Z",
+            "mergedBy": "alxhub",
+            "baseRefName": "master",
+            "headRefName": "fix-aio-links-with-sym",
+            "state": "MERGED",
+            "reviews": [
+                {
+                    "user": "petebacondarwin",
+                    "submittedAt": "2017-07-28T18:57:00.000Z",
+                    "state": "APPROVED",
+                    "createdAt": "2017-07-28T15:04:18.000Z"
+                }
+            ]
+        },
+        {
+            "author": "mlaval",
+            "createdAt": "2017-07-28T15:03:50.000Z",
+            "baseRefName": "master",
+            "headRefName": "issue17035",
+            "state": "OPEN",
+            "reviews": []
+        },
+        {
+            "author": "Toxicable",
+            "createdAt": "2017-07-28T09:44:12.000Z",
+            "baseRefName": "master",
+            "headRefName": "xhr-strings",
+            "state": "CLOSED",
+            "reviews": [
+                {
+                    "user": "Toxicable",
+                    "submittedAt": "2017-07-31T19:43:19.000Z",
+                    "state": "COMMENTED",
+                    "createdAt": "2017-07-28T09:44:12.000Z"
+                }
+            ]
+        }
+    ]
+}
