@@ -1,0 +1,19 @@
+{
+    "github": {
+        "oauth": {
+            "baseUrl": "http://localhost",
+            "port": 8080,
+            "loginUri": "/login",
+            "callbackUri": "/callback",
+            "scopes": "user"
+        },
+        "api": {
+            "key": "",
+            "secret": ""
+        }
+    },
+    "project": {
+        "organization": "vroozi",
+        "repo": "purchasing-manager"
+    }
+}

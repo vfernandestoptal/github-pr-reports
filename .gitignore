@@ -1,0 +1,31 @@
+.env
+.vscode
+
+# NPM Modules
+node_modules
+
+# OS generated files #
+.DS_Store
+.DS_Store?
+Thumbs.db
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
+
+# Eclipse
+.project
+.classpath
+.settings
+
+# Netbeans
+nbproject
+
+# Log Files
+logs
+npm-debug.log
+
+# Ignore mapping file for asset revisioning
+rev-manifest.json

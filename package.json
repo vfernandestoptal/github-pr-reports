@@ -1,0 +1,24 @@
+{
+    "name": "vroozi-github-reports",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node src/index.js",
+        "lint": "eslint ."
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "config": "^1.26.1",
+        "dotenv": "^4.0.0",
+        "github-oauth": "^0.2.2",
+        "http-close": "^0.0.2",
+        "node-github-graphql": "^0.2.4",
+        "opn": "^5.1.0"
+    },
+    "devDependencies": {
+        "eslint": "^4.3.0",
+        "eslint-config-recommended": "^1.5.0"
+    }
+}

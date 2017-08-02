@@ -1,0 +1,12 @@
+{
+    "github": {
+        "api": {
+            "key": "GITHUB_API_KEY",
+            "secret": "GITHUB_API_SECRET"
+        }
+    },
+    "project": {
+        "organization": "PROJECT_ORG",
+        "repo": "PROJECT_REPO"
+    }
+}
