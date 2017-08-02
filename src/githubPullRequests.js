@@ -90,6 +90,10 @@ function getPullRequestsData(options) {
                 endDate,
                 pullRequests,
             };
+        })
+        .then(data => {
+            require('fs').writeFileSync(`pullRequestsData.json`, JSON.stringify(data, null, 4));
+            return data;
         });
 }
 
@@ -104,9 +108,13 @@ function getPullRequestsDataPage(options) {
 
     logger.info(`Getting more Pull Requests`);
 
-    const query = getPullRequestsQuery(organization, repository, nextPageCursor, 50);
+    const query = getPullRequestsQuery(organization, repository, nextPageCursor, 100);
 
     return githubClient.query(query)
+        .then(response => {
+            require('fs').writeFileSync(`githubPullRequests_${nextPageCursor}.json`, JSON.stringify(response, null, 4));
+            return response;
+        })
         .then(response => parsePullRequestsResponse(response))
         .then(response => filterPullRequestsByDate(response, startDate, endDate))
         .then(response => {
@@ -221,32 +229,6 @@ function addReviewDoneEvent(event, reviews) {
 
     return reviews;
 }
-
-const samplePullRequestsDataModel = { // eslint-disable-line no-unused-vars
-    organization: '',
-    repository: '',
-    startDate: '',
-    endDate: '',
-    pullRequests: [
-        {
-            author: '',
-            createdAt: '',
-            mergedAt: '',
-            mergedBy: '',
-            baseRefName: '',
-            headRefName: '',
-            state: '',
-            reviews: [
-                {
-                    user: '',
-                    assignedAt: '',
-                    submittedAt: '',
-                    state: '',
-                },
-            ],
-        },
-    ],
-};
 
 module.exports = {
     getPullRequestsData: getPullRequestsData,

@@ -16,11 +16,11 @@ ghTokens.getToken((err, token) => {
         token,
         organization: config.get('project.organization'),
         repository: config.get('project.repo'),
-        startDate: moment.utc('2017-07-20').startOf('day'),
-        endDate: moment.utc('2017-07-31').endOf('day'),
+        startDate: moment.utc('2017-07-28').startOf('day'),
+        endDate: moment.utc('2017-07-28').endOf('day'),
     })
         .then(data => {
-            console.log('DATA', JSON.stringify(data, 4));
+            console.log('DATA', JSON.stringify(data, null, 2));
         })
         .catch(error => console.log('ERROR', error));
 
