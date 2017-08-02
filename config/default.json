@@ -5,7 +5,7 @@
             "port": 8080,
             "loginUri": "/login",
             "callbackUri": "/callback",
-            "scopes": "user"
+            "scopes": "repo"
         },
         "api": {
             "key": "",
@@ -15,5 +15,8 @@
     "project": {
         "organization": "vroozi",
         "repo": "purchasing-manager"
+    },
+    "logger": {
+        "level": "debug"
     }
 }

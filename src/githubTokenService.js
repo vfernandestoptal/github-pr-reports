@@ -1,13 +1,15 @@
 'use strict';
 
 const config = require('config');
-const baseUrl = config.get('github.oauth.baseUrl')
+const baseUrl = config.get('github.oauth.baseUrl');
 const port = Number(config.get('github.oauth.port'));
 const loginUri = config.get('github.oauth.loginUri');
+const apiKey = config.get('github.api.key');
+const apiSecret = config.get('github.api.secret');
 
 const githubOAuth = require('github-oauth')({
-    githubClient: config.get('github.api.key'),
-    githubSecret: config.get('github.api.secret'),
+    githubClient: apiKey,
+    githubSecret: apiSecret,
     baseURL: `${baseUrl}:${port}`,
     loginURI: loginUri,
     callbackURI: config.get('github.oauth.callbackUri'),
@@ -15,6 +17,10 @@ const githubOAuth = require('github-oauth')({
 });
 
 function getToken(callback) {
+    if (!apiKey || !apiSecret) {
+        return callback(new Error('No Api key/secret specified. Please set GITHUB_API_KEY and GITHUB_API_SECRET env variables.'));
+    }
+
     let browserProc;
 
     const tokenServer = startTokenServer((err, token) => {
@@ -56,32 +62,5 @@ function startTokenServer(callback) {
 }
 
 module.exports = {
-    getToken,
+    getToken: getToken,
 };
-
-
-// const GithubGraphQLApi = require('node-github-graphql');
-// function testGraphQL(token) {
-//     console.log('TOKEN', token)
-//     const github = new GithubGraphQLApi({
-//         Promise: require('bluebird'),
-//         token: token,
-//         debug: true,
-//     });
-
-//     github.query(
-//         `
-//             {
-//                 viewer {
-//                 login
-//                 }
-//             }
-//         `
-//     )
-//         .then(res => {
-//             console.log(JSON.stringify(res, null, 2));
-//         })
-//         .catch(err => {
-//             console.log('ERROR', err);
-//         });
-// }

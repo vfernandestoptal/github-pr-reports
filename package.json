@@ -1,5 +1,5 @@
 {
-    "name": "vroozi-github-reports",
+    "name": "github-pr-reports",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
@@ -10,12 +10,15 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
+        "bluebird": "^3.5.0",
         "config": "^1.26.1",
         "dotenv": "^4.0.0",
         "github-oauth": "^0.2.2",
         "http-close": "^0.0.2",
+        "moment": "^2.18.1",
         "node-github-graphql": "^0.2.4",
-        "opn": "^5.1.0"
+        "opn": "^5.1.0",
+        "winston": "^2.3.1"
     },
     "devDependencies": {
         "eslint": "^4.3.0",
