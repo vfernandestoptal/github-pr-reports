@@ -1,10 +1,12 @@
 'use strict';
 
 const bluebird = require('bluebird');
+const config = require('config');
 const moment = require('moment');
 const logger = require('./logger');
 const GithubClient = require('./githubClient');
 const PullRequestTimelineEventType = require('./githubEnums').PullRequestTimelineEventType;
+const MaxRetryCount = config.get('github.api.retries');
 
 function getPullRequestsQuery(organization, repository, after, count) {
     return `
@@ -105,6 +107,7 @@ function getPullRequestsDataPage(options) {
     const endDate = options.endDate;
     const nextPageCursor = options.nextPageCursor;
     const results = options.results;
+    const attemptsCount = options.attemptsCount || 0;
 
     logger.info(`Getting more Pull Requests`);
 
@@ -127,6 +130,7 @@ function getPullRequestsDataPage(options) {
                     endDate,
                     nextPageCursor: response.next,
                     results: results.concat(response.data),
+                    attemptsCount: 0,
                 });
             }
             else {
@@ -134,6 +138,19 @@ function getPullRequestsDataPage(options) {
             }
         })
         .catch(error => {
+            if (attemptsCount < MaxRetryCount) {
+                logger.warn('Error getting data, retrying...');
+                return getPullRequestsDataPage({
+                    githubClient,
+                    organization,
+                    repository,
+                    startDate,
+                    endDate,
+                    nextPageCursor,
+                    results,
+                    attemptsCount: attemptsCount + 1,
+                });
+            }
             logger.error(error);
             return bluebird.reject(new Error('Error getting pull requests data'));
         });
@@ -166,6 +183,7 @@ function parsePullRequestsResponse(response) {
         logger.debug(`Parsing Pull Request ${pr.number} from ${pr.author.login} created at ${pr.createdAt}`);
 
         const mergeAction = pr.timeline.nodes.find(event => event.__typename === PullRequestTimelineEventType.MergedEvent);
+        const totalReviews = pr.timeline.nodes.filter(event => event.__typename === PullRequestTimelineEventType.PullRequestReview).length;
 
         return {
             author: pr.author.login,
@@ -175,6 +193,7 @@ function parsePullRequestsResponse(response) {
             baseRefName: pr.baseRefName,
             headRefName: pr.headRefName,
             state: pr.state,
+            totalReviews: totalReviews,
             reviews: parsePullRequestReviews(pr.timeline.nodes).map(review => {
                 if (!review.createdAt) {
                     review.createdAt = moment.utc(pr.createdAt);

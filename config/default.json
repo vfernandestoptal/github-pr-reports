@@ -9,7 +9,8 @@
         },
         "api": {
             "key": "",
-            "secret": ""
+            "secret": "",
+            "retries": 3
         }
     },
     "project": {
