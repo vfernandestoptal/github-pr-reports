@@ -32,9 +32,18 @@ function getMax(args) {
     return numbers[0];
 }
 
+function getStandardDeviation(args, avg) {
+    if (!args.length) {
+        return 0;
+    }
+    const total = args.reduce((total, value) => (value - avg) * (value - avg), 0);
+    return Math.sqrt(total / args.length);
+}
+
 module.exports = {
     getMedian: getMedian,
     getAverage: getAverage,
+    getStandardDeviation: getStandardDeviation,
     getMin: getMin,
     getMax: getMax,
 };

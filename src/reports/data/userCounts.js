@@ -1,6 +1,5 @@
 'use strict';
 
-const moment = require('moment');
 const enums = require('../../githubEnums');
 const helpers = require('./helpers');
 
@@ -24,22 +23,15 @@ function calculateStatistics(name, pullRequests) {
     const mergedPullRequests = pullRequests
         .filter(pr => pr.state === enums.PullRequestState.MERGED);
 
-    const mergedTimes = mergedPullRequests
-        .map(pr => moment.utc(pr.mergedAt).diff(moment.utc(pr.createdAt)));
-
-    const avgMergeTime = helpers.getAverage(mergedTimes);
-    const stdevMergeTime = helpers.getStandardDeviation(mergedTimes, avgMergeTime);
+    const reviewsCount = mergedPullRequests
+        .map(pr => pr.totalReviews);
 
     return {
         name: name,
+        openCount: pullRequests.filter(pr => pr.state === enums.PullRequestState.OPEN).length,
         mergedCount: mergedPullRequests.length,
-        averageMergeTime: avgMergeTime,
-        medianMergeTime: helpers.getMedian(mergedTimes),
-        minMergeTime: helpers.getMin(mergedTimes),
-        maxMergeTime: helpers.getMax(mergedTimes),
-        standardDeviationMergeTime: stdevMergeTime,
-        minDeviationMergeTime: avgMergeTime - stdevMergeTime,
-        maxDeviationMergeTime: avgMergeTime + stdevMergeTime,
+        averageReviewCount: helpers.getAverage(reviewsCount),
+        medianReviewCount: helpers.getMedian(reviewsCount),
     };
 }
 

@@ -6,19 +6,19 @@ const helpers = require('./helpers');
 
 const userColumns = [
     { label: 'User', name: 'name', size: 28 },
-    { label: 'Merged', name: 'mergedCount', size: 8, map: helpers.toString, align: Alignment.Right },
-    { label: 'Median', name: 'medianMergeTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: '-σ', name: 'minDeviationMergeTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: 'Avg', name: 'averageMergeTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: '+σ', name: 'maxDeviationMergeTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: 'Std Dev', name: 'standardDeviationMergeTime', size: 8, map: helpers.toHours, align: Alignment.Right },
+    { label: 'Count', name: 'reviewCount', size: 8, map: helpers.toString, align: Alignment.Right },
+    { label: 'Median', name: 'medianReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
+    { label: '-σ', name: 'minDeviationReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
+    { label: 'Avg', name: 'averageReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
+    { label: '+σ', name: 'maxDeviationReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
+    { label: 'Std Dev', name: 'standardDeviationReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
 ];
 
 function generate(data) {
     return `
 ${helpers.generateReportDivider()}
 
-Report: Users Time to Merge
+Report: Users Time to Review
 ${helpers.generateSectionDivider()}
 
 Project: ${data.organization}/${data.repository}

@@ -9,43 +9,63 @@ const fs = require('fs');
 const ghTokens = require('./githubTokenService');
 const pullRequests = require('./githubPullRequests');
 
-// ghTokens.getToken((err, token) => {
-//     if (err) {
-//         return console.log('ERROR', err);
-//     }
+const useLiveData = false;
 
-//     pullRequests.getPullRequestsData({
-//         token,
-//         organization: config.get('project.organization'),
-//         repository: config.get('project.repo'),
-//         startDate: moment.utc('2017-07-01').startOf('day'),
-//         endDate: moment.utc('2017-07-31').endOf('day'),
-//     })
-//         .then(data => {
-//             fs.writeFileSync(
-//                 path.join(__dirname, 'pullRequestsData.json'),
-//                 JSON.stringify(data),
-//                 'utf-8'
-//             );
-//             generateReport(data);
-//         })
-//         .catch(error => console.log('ERROR', error));
+if (useLiveData) {
 
-// });
+    ghTokens.getToken((err, token) => {
+        if (err) {
+            return console.log('ERROR', err);
+        }
 
-const dataFile = path.join(__dirname, 'pullRequestsData.json');
-const data = JSON.parse(
-    fs.readFileSync(dataFile, 'utf-8')
-);
-generateReport(data);
+        pullRequests.getPullRequestsData({
+            token,
+            organization: config.get('project.organization'),
+            repository: config.get('project.repo'),
+            startDate: moment.utc('2017-07-01').startOf('day'),
+            endDate: moment.utc('2017-07-31').endOf('day'),
+        })
+            .then(data => {
+                fs.writeFileSync(
+                    path.join(__dirname, 'pullRequestsData.json'),
+                    JSON.stringify(data),
+                    'utf-8'
+                );
+                generateReports(data);
+            })
+            .catch(error => console.log('ERROR', error));
 
-function generateReport(data) {
-    const userTimeToMergeReportData = require('./reports/data/userTimeToMerge');
-    const userTimeToMergeReportDisplay = require('./reports/display/userTimeToMerge');
+    });
 
+}
+else {
+
+    const dataFile = path.join(__dirname, 'pullRequestsData.json');
+    const data = JSON.parse(
+        fs.readFileSync(dataFile, 'utf-8')
+    );
+
+    generateReports(data);
+}
+
+function generateReports(data) {
+    const reports = [
+        'userCounts',
+        'userTimeToMerge',
+        'userTimeToReview',
+    ];
+
+    reports.forEach(report => {
+        const reportData = require(`./reports/data/${report}`);
+        const reportDisplay = require(`./reports/display/${report}`);
+        generateReport(reportData, reportDisplay, data);
+    });
+}
+
+function generateReport(dataProcessor, displayProcessor, data) {
     console.log(
-        userTimeToMergeReportDisplay.generate(
-            userTimeToMergeReportData.generate(data)
+        displayProcessor.generate(
+            dataProcessor.generate(data)
         )
     );
 }
