@@ -20,6 +20,29 @@ function groupPullRequestsByAuthor(pullRequests) {
     }, {});
 }
 
+function calculateStatistics(name, pullRequests) {
+    const mergedPullRequests = pullRequests
+        .filter(pr => pr.state === enums.PullRequestState.MERGED);
+
+    const mergedTimes = mergedPullRequests
+        .map(pr => moment.utc(pr.mergedAt).diff(moment.utc(pr.createdAt)));
+
+    const reviewsCount = mergedPullRequests
+        .map(pr => pr.totalReviews);
+
+    return {
+        name: name,
+        openCount: pullRequests.filter(pr => pr.state === enums.PullRequestState.OPEN).length,
+        mergedCount: mergedTimes.length,
+        averageMergeTime: helpers.getAverage(mergedTimes),
+        medianMergeTime: helpers.getMedian(mergedTimes),
+        minMergeTime: helpers.getMin(mergedTimes),
+        maxMergeTime: helpers.getMax(mergedTimes),
+        averageReviewCount: helpers.getAverage(reviewsCount),
+        medianReviewCount: helpers.getAverage(reviewsCount),
+    };
+}
+
 function generate(data) {
     const pullRequestsByAuthor = groupPullRequestsByAuthor(data.pullRequests);
 
@@ -27,20 +50,10 @@ function generate(data) {
         .sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1)
         .map(user => {
             const pullRequests = pullRequestsByAuthor[user].pullRequests;
-            const mergedTimes = pullRequests
-                .filter(pr => pr.state === enums.PullRequestState.MERGED)
-                .map(pr => moment.utc(pr.mergedAt).diff(moment.utc(pr.createdAt)));
-
-            return {
-                user: user,
-                openCount: pullRequests.filter(pr => pr.state === enums.PullRequestState.OPEN).length,
-                mergedCount: mergedTimes.length,
-                averageMergeTime: helpers.getAverage(mergedTimes),
-                medianMergeTime: helpers.getMedian(mergedTimes),
-                minMergeTime: helpers.getMin(mergedTimes),
-                maxMergeTime: helpers.getMax(mergedTimes),
-            };
+            return calculateStatistics(user, pullRequests);
         });
+
+    const totals = calculateStatistics('TOTALS', data.pullRequests);
 
     return {
         organization: data.organization,
@@ -48,6 +61,7 @@ function generate(data) {
         startDate: data.startDate,
         endDate: data.endDate,
         users: users,
+        totals: totals,
     };
 }
 
