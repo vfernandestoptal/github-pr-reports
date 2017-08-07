@@ -22,8 +22,8 @@ if (useLiveData) {
             token,
             organization: config.get('project.organization'),
             repository: config.get('project.repo'),
-            startDate: moment.utc('2017-07-01').startOf('day'),
-            endDate: moment.utc('2017-07-31').endOf('day'),
+            startDate: moment.utc('2017-04').startOf('month'),
+            endDate: moment.utc('2017-06').endOf('month'),
         })
             .then(data => {
                 fs.writeFileSync(
@@ -40,7 +40,7 @@ if (useLiveData) {
 }
 else {
 
-    const dataFile = path.join(__dirname, 'pullRequestsData.json');
+    const dataFile = path.join(__dirname, 'pullRequestsData_2017_Q2.json');
     const data = JSON.parse(
         fs.readFileSync(dataFile, 'utf-8')
     );

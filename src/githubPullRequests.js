@@ -160,7 +160,7 @@ function filterPullRequestsByDate(response, startDate, endDate) {
     const pullRequests = response.data
         .filter(pr => pr.createdAt.isBetween(startDate, endDate));
 
-    const hasMoreData = response.next && pullRequests.length > 0 && response.data[response.data.length - 1].createdAt.isAfter(startDate);
+    const hasMoreData = response.next && response.data.length > 0 && response.data[response.data.length - 1].createdAt.isAfter(startDate);
 
     return bluebird.resolve({
         data: pullRequests,
