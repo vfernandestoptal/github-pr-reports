@@ -1,5 +1,7 @@
 'use strict';
 
+const async = require('async');
+const bluebird = require('bluebird');
 const enums = require('../../githubEnums');
 const helpers = require('./helpers');
 
@@ -36,25 +38,32 @@ function calculateStatistics(name, pullRequests) {
 }
 
 function generate(data) {
+    const dataDefered = bluebird.defer();
     const pullRequestsByAuthor = groupPullRequestsByAuthor(data.pullRequests);
 
-    const users = Object.keys(pullRequestsByAuthor)
-        .sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1)
-        .map(user => {
+    async.map(
+        Object.keys(pullRequestsByAuthor).sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1),
+        (user, callback) => {
             const pullRequests = pullRequestsByAuthor[user].pullRequests;
-            return calculateStatistics(user, pullRequests);
-        });
+            async.setImmediate(() => callback(null, calculateStatistics(user, pullRequests)));
+        },
+        (err, users) => {
+            if (err) {
+                return dataDefered.reject(new Error('Error generating report data'));
+            }
 
-    const totals = calculateStatistics('TOTALS', data.pullRequests);
-
-    return {
-        organization: data.organization,
-        repository: data.repository,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        users: users,
-        totals: totals,
-    };
+            const totals = calculateStatistics('TOTALS', data.pullRequests);
+            dataDefered.resolve({
+                organization: data.organization,
+                repository: data.repository,
+                startDate: data.startDate,
+                endDate: data.endDate,
+                users: users,
+                totals: totals,
+            });
+        }
+    );
+    return dataDefered.promise;
 }
 
 module.exports = {

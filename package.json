@@ -12,6 +12,7 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
+        "async": "^2.5.0",
         "bluebird": "^3.5.0",
         "config": "^1.26.1",
         "dotenv": "^4.0.0",

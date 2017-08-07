@@ -1,5 +1,6 @@
 'use strict';
 
+const async = require('async');
 const bluebird = require('bluebird');
 const config = require('config');
 const moment = require('moment');
@@ -92,10 +93,6 @@ function getPullRequestsData(options) {
                 endDate,
                 pullRequests,
             };
-        })
-        .then(data => {
-            require('fs').writeFileSync(`pullRequestsData.json`, JSON.stringify(data, null, 4));
-            return data;
         });
 }
 
@@ -114,10 +111,6 @@ function getPullRequestsDataPage(options) {
     const query = getPullRequestsQuery(organization, repository, nextPageCursor, 100);
 
     return githubClient.query(query)
-        .then(response => {
-            require('fs').writeFileSync(`githubPullRequests_${nextPageCursor}.json`, JSON.stringify(response, null, 4));
-            return response;
-        })
         .then(response => parsePullRequestsResponse(response))
         .then(response => filterPullRequestsByDate(response, startDate, endDate))
         .then(response => {
@@ -179,31 +172,44 @@ function parsePullRequestsResponse(response) {
 
     logger.info(`Parsing another ${data.length} Pull Requests`);
 
-    const pullRequests = data.map(pr => {
-        logger.debug(`Parsing Pull Request ${pr.number} from ${pr.author.login} created at ${pr.createdAt}`);
+    const resultsDefer = bluebird.defer();
+    async.map(
+        data,
+        (pr, callback) => {
+            logger.debug(`Parsing Pull Request ${pr.number} from ${pr.author.login} created at ${pr.createdAt}`);
 
-        const mergeAction = pr.timeline.nodes.find(event => event.__typename === PullRequestTimelineEventType.MergedEvent);
-        const totalReviews = pr.timeline.nodes.filter(event => event.__typename === PullRequestTimelineEventType.PullRequestReview).length;
+            const mergeAction = pr.timeline.nodes.find(event => event.__typename === PullRequestTimelineEventType.MergedEvent);
+            const totalReviews = pr.timeline.nodes.filter(event => event.__typename === PullRequestTimelineEventType.PullRequestReview).length;
 
-        return {
-            author: pr.author.login,
-            createdAt: moment.utc(pr.createdAt),
-            mergedAt: mergeAction && moment.utc(pr.mergedAt) || undefined,
-            mergedBy: mergeAction && mergeAction.actor.login || undefined,
-            baseRefName: pr.baseRefName,
-            headRefName: pr.headRefName,
-            state: pr.state,
-            totalReviews: totalReviews,
-            reviews: parsePullRequestReviews(pr.timeline.nodes).map(review => {
-                if (!review.assignedAt) {
-                    review.assignedAt = moment.utc(pr.createdAt);
-                }
-                return review;
-            }),
-        };
-    });
+            async.setImmediate(() =>
+                callback(null, {
+                    author: pr.author.login,
+                    createdAt: moment.utc(pr.createdAt),
+                    mergedAt: mergeAction && moment.utc(pr.mergedAt) || undefined,
+                    mergedBy: mergeAction && mergeAction.actor.login || undefined,
+                    baseRefName: pr.baseRefName,
+                    headRefName: pr.headRefName,
+                    state: pr.state,
+                    totalReviews: totalReviews,
+                    reviews: parsePullRequestReviews(pr.timeline.nodes).map(review => {
+                        if (!review.assignedAt) {
+                            review.assignedAt = moment.utc(pr.createdAt);
+                        }
+                        return review;
+                    }),
+                })
+            );
+        },
+        (err, pullRequests) => {
+            if (err) {
+                return resultsDefer.reject(new Error('Error parsing data'));
+            }
 
-    return bluebird.resolve({ data: pullRequests, next: nextPageCursor });
+            resultsDefer.resolve({ data: pullRequests, next: nextPageCursor });
+        }
+    );
+
+    return resultsDefer.promise;
 }
 
 function parsePullRequestReviews(events) {

@@ -22,8 +22,8 @@ if (useLiveData) {
             token,
             organization: config.get('project.organization'),
             repository: config.get('project.repo'),
-            startDate: moment.utc('2017-04').startOf('month'),
-            endDate: moment.utc('2017-06').endOf('month'),
+            startDate: moment.utc('2017-08').startOf('month'),
+            endDate: moment.utc('2017-09').endOf('month'),
         })
             .then(data => {
                 fs.writeFileSync(
@@ -40,7 +40,7 @@ if (useLiveData) {
 }
 else {
 
-    const dataFile = path.join(__dirname, 'pullRequestsData_2017_Q2.json');
+    const dataFile = path.join(__dirname, 'pullRequestsData_2017_Q3.json');
     const data = JSON.parse(
         fs.readFileSync(dataFile, 'utf-8')
     );
@@ -63,9 +63,6 @@ function generateReports(data) {
 }
 
 function generateReport(dataProcessor, displayProcessor, data) {
-    console.log(
-        displayProcessor.generate(
-            dataProcessor.generate(data)
-        )
-    );
+    dataProcessor.generate(data)
+        .then(data => console.log(displayProcessor.generate(data)));
 }

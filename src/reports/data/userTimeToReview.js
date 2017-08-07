@@ -1,5 +1,7 @@
 'use strict';
 
+const async = require('async');
+const bluebird = require('bluebird');
 const moment = require('moment');
 const helpers = require('./helpers');
 
@@ -43,26 +45,33 @@ function calculateStatistics(name, reviews) {
 }
 
 function generate(data) {
+    const dataDefered = bluebird.defer();
     const reviewsByAuthor = groupReviewsByAuthor(data.pullRequests);
 
-    const users = Object.keys(reviewsByAuthor)
-        .sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1)
-        .map(user => {
+    async.map(
+        Object.keys(reviewsByAuthor).sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1),
+        (user, callback) => {
             const reviews = reviewsByAuthor[user].reviews;
-            return calculateStatistics(user, reviews);
-        });
+            async.setImmediate(() => callback(null, calculateStatistics(user, reviews)));
+        },
+        (err, users) => {
+            if (err) {
+                return dataDefered.reject(new Error('Error generating report data'));
+            }
 
-    const allReviews = data.pullRequests.reduce((all, pr) => all.concat(...pr.reviews), []);
-    const totals = calculateStatistics('TOTALS', allReviews);
-
-    return {
-        organization: data.organization,
-        repository: data.repository,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        users: users,
-        totals: totals,
-    };
+            const allReviews = data.pullRequests.reduce((all, pr) => all.concat(...pr.reviews), []);
+            const totals = calculateStatistics('TOTALS', allReviews);
+            dataDefered.resolve({
+                organization: data.organization,
+                repository: data.repository,
+                startDate: data.startDate,
+                endDate: data.endDate,
+                users: users,
+                totals: totals,
+            });
+        }
+    );
+    return dataDefered.promise;
 }
 
 module.exports = {
