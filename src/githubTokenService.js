@@ -6,6 +6,7 @@ const port = Number(config.get('github.oauth.port'));
 const loginUri = config.get('github.oauth.loginUri');
 const apiKey = config.get('github.api.key');
 const apiSecret = config.get('github.api.secret');
+const apiToken = config.get('github.api.token');
 
 const githubOAuth = require('github-oauth')({
     githubClient: apiKey,
@@ -17,6 +18,10 @@ const githubOAuth = require('github-oauth')({
 });
 
 function getToken(callback) {
+    if (apiToken) {
+        return callback(null, apiToken);
+    }
+
     if (!apiKey || !apiSecret) {
         return callback(new Error('No Api key/secret specified. Please set GITHUB_API_KEY and GITHUB_API_SECRET env variables.'));
     }
@@ -55,6 +60,7 @@ function startTokenServer(callback) {
 
     githubOAuth.on('token', (token, serverResponse) => {
         serverResponse.end('Thanks! You can now close this window');
+        console.log('TOKEN', token);
         callback(null, token.access_token);
     });
 

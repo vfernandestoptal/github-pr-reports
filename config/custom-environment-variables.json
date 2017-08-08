@@ -3,6 +3,7 @@
         "api": {
             "key": "GITHUB_API_KEY",
             "secret": "GITHUB_API_SECRET",
+            "token": "GITHUB_ACCESS_TOKEN",
             "retries": "GITHUB_API_RETRIES"
         }
     },
