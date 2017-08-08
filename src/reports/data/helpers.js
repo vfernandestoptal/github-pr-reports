@@ -40,10 +40,15 @@ function getStandardDeviation(args, avg) {
     return Math.sqrt(total / args.length);
 }
 
+function range(count) {
+    return Array.from(new Array(count).keys());
+}
+
 module.exports = {
     getMedian: getMedian,
     getAverage: getAverage,
     getStandardDeviation: getStandardDeviation,
     getMin: getMin,
     getMax: getMax,
+    range: range,
 };

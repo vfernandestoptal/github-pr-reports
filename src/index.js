@@ -9,7 +9,7 @@ const fs = require('fs');
 const ghTokens = require('./githubTokenService');
 const pullRequests = require('./githubPullRequests');
 
-const useLiveData = false;
+const useLiveData = true;
 
 if (useLiveData) {
 
@@ -22,12 +22,12 @@ if (useLiveData) {
             token,
             organization: config.get('project.organization'),
             repository: config.get('project.repo'),
-            startDate: moment.utc('2017-08').startOf('month'),
+            startDate: moment.utc('2017-07').startOf('month'),
             endDate: moment.utc('2017-09').endOf('month'),
         })
             .then(data => {
                 fs.writeFileSync(
-                    path.join(__dirname, 'pullRequestsData.json'),
+                    path.join(__dirname, 'pullRequestsData_2017_Q3.json'),
                     JSON.stringify(data),
                     'utf-8'
                 );
@@ -53,6 +53,7 @@ function generateReports(data) {
         'userCounts',
         'userTimeToMerge',
         'userTimeToReview',
+        'userReviewTimeBuckets',
     ];
 
     reports.forEach(report => {
