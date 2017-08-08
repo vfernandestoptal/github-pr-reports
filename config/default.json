@@ -19,5 +19,11 @@
     },
     "logger": {
         "level": "debug"
+    },
+    "reports": {
+        "userReviewTimeBuckets": {
+            "bucketSize": 8,
+            "maxBuckets": 7
+        }
     }
 }

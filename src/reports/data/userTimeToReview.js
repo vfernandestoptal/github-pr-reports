@@ -66,6 +66,7 @@ function generate(data) {
                 repository: data.repository,
                 startDate: data.startDate,
                 endDate: data.endDate,
+                generatedOn: moment.utc(),
                 users: users.filter(user => user.reviewCount > 0),
                 totals: totals,
             });

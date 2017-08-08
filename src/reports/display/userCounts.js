@@ -21,6 +21,7 @@ ${helpers.generateSectionDivider()}
 
 Project: ${data.organization}/${data.repository}
 Date Period: ${moment(data.startDate).format('LL')} to ${moment(data.endDate).format('LL')}
+Generated On: ${moment(data.generatedOn).format('LLL')}
 
 ${helpers.generateSectionDivider()}
 ${helpers.generateTableHeaders(userColumns)}

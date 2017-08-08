@@ -5,6 +5,16 @@ const bluebird = require('bluebird');
 const moment = require('moment');
 const helpers = require('./helpers');
 
+const config = {
+    bucketSize: 8,
+    maxBuckets: 7,
+};
+
+function setConfig(configuration) {
+    config.bucketSize = configuration.bucketSize || config.bucketSize;
+    config.maxBuckets = configuration.maxBuckets || config.maxBuckets;
+}
+
 function getNewUser(username) {
     return {
         user: username,
@@ -28,19 +38,17 @@ function calculateStatistics(name, reviews) {
         .filter(review => review.assignedAt && review.submittedAt)
         .map(review => moment.utc(review.submittedAt).diff(moment.utc(review.assignedAt)));
 
-    const bucketSize = 8;
-    const maxBuckets = 7;
-    const timeBuckets = helpers.range(maxBuckets)
+    const timeBuckets = helpers.range(config.maxBuckets)
         .map((_, index) => {
             return {
-                minValue: index * bucketSize,
-                maxValue: index + 1 === maxBuckets ? '' : (index + 1) * bucketSize,
+                minValue: index * config.bucketSize,
+                maxValue: index + 1 === config.maxBuckets ? '' : (index + 1) * config.bucketSize,
                 count: 0,
             };
         });
 
     reviewTimes.forEach(time => {
-        const bucketIndex = Math.min(Math.floor(moment.duration(time).asHours() / bucketSize), maxBuckets - 1);
+        const bucketIndex = Math.min(Math.floor(moment.duration(time).asHours() / config.bucketSize), config.maxBuckets - 1);
         timeBuckets[bucketIndex].count = timeBuckets[bucketIndex].count + 1;
     });
 
@@ -72,6 +80,7 @@ function generate(data) {
                 repository: data.repository,
                 startDate: data.startDate,
                 endDate: data.endDate,
+                generatedOn: moment.utc(),
                 users: users.filter(user => user.buckets.length > 0),
                 totals: totals,
             });
@@ -81,5 +90,6 @@ function generate(data) {
 }
 
 module.exports = {
+    setConfig: setConfig,
     generate: generate,
 };

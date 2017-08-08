@@ -4,18 +4,19 @@ const moment = require('moment');
 const Alignment = require('./helpers').Alignment;
 const helpers = require('./helpers');
 
-const userColumns = [
-    { label: 'User', name: 'name', size: 28 },
-    { label: '[00 - 08[', name: 'buckets', size: 10, map: (value) => value[0] && value[0].count.toString() || '-', align: Alignment.Right },
-    { label: '[08 - 16[', name: 'buckets', size: 10, map: (value) => value[1] && value[1].count.toString() || '-', align: Alignment.Right },
-    { label: '[16 - 24[', name: 'buckets', size: 10, map: (value) => value[2] && value[2].count.toString() || '-', align: Alignment.Right },
-    { label: '[24 - 32[', name: 'buckets', size: 10, map: (value) => value[3] && value[3].count.toString() || '-', align: Alignment.Right },
-    { label: '[32 - 40[', name: 'buckets', size: 10, map: (value) => value[4] && value[4].count.toString() || '-', align: Alignment.Right },
-    { label: '[40 - 48[', name: 'buckets', size: 10, map: (value) => value[5] && value[5].count.toString() || '-', align: Alignment.Right },
-    { label: '48+', name: 'buckets', size: 10, map: (value) => value[6] && value[6].count.toString() || '-', align: Alignment.Right },
-];
-
 function generate(data) {
+    const userColumns = [
+        { label: 'User', name: 'name', size: 28 },
+    ];
+
+    if (data.users.length && data.users[0].buckets) {
+        data.users[0].buckets.forEach((bucket, index) => {
+            userColumns.push(
+                { label: bucket.maxValue && `${bucket.minValue} to ${bucket.maxValue}` || `${bucket.minValue}+`, name: 'buckets', size: 8, map: (value) => value[index] && value[index].count.toString() || '-', align: Alignment.Right }
+            );
+        });
+    }
+
     return `
 ${helpers.generateReportDivider()}
 
@@ -24,6 +25,7 @@ ${helpers.generateSectionDivider()}
 
 Project: ${data.organization}/${data.repository}
 Date Period: ${moment(data.startDate).format('LL')} to ${moment(data.endDate).format('LL')}
+Generated On: ${moment(data.generatedOn).format('LLL')}
 
 ${helpers.generateSectionDivider()}
 ${helpers.generateTableHeaders(userColumns)}

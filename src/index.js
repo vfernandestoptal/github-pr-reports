@@ -9,7 +9,7 @@ const fs = require('fs');
 const ghTokens = require('./githubTokenService');
 const pullRequests = require('./githubPullRequests');
 
-const useLiveData = true;
+const useLiveData = false;
 
 if (useLiveData) {
 
@@ -59,6 +59,11 @@ function generateReports(data) {
     reports.forEach(report => {
         const reportData = require(`./reports/data/${report}`);
         const reportDisplay = require(`./reports/display/${report}`);
+
+        const reportConfig = config.has(`reports.${report}`) && config.get(`reports.${report}`) || {};
+        reportData.setConfig && reportData.setConfig(reportConfig);
+        reportDisplay.setConfig && reportDisplay.setConfig(reportConfig);
+
         generateReport(reportData, reportDisplay, data);
     });
 }
