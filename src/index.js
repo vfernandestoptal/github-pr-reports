@@ -9,7 +9,7 @@ const fs = require('fs');
 const ghTokens = require('./githubTokenService');
 const pullRequests = require('./githubPullRequests');
 
-const useLiveData = false;
+const useLiveData = process.env.LIVE || false;
 
 if (useLiveData) {
 

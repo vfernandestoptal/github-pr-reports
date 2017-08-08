@@ -93,6 +93,7 @@ function getPullRequestsData(options) {
                 repository,
                 startDate,
                 endDate,
+                generatedOn: moment.utc(),
                 pullRequests,
             };
         });

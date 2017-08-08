@@ -81,7 +81,7 @@ function generate(data) {
                 repository: data.repository,
                 startDate: data.startDate,
                 endDate: data.endDate,
-                generatedOn: moment.utc(),
+                generatedOn: data.generatedOn,
                 users: users.filter(user => user.buckets.length > 0),
                 totals: totals,
             });

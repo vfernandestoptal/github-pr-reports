@@ -66,7 +66,7 @@ function generate(data) {
                 repository: data.repository,
                 startDate: data.startDate,
                 endDate: data.endDate,
-                generatedOn: moment.utc(),
+                generatedOn: data.generatedOn,
                 users: users.filter(user => user.mergedCount > 0),
                 totals: totals,
             });
