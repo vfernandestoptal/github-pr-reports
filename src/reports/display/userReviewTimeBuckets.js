@@ -7,6 +7,7 @@ const helpers = require('./helpers');
 function generate(data) {
     const userColumns = [
         { label: 'User', name: 'name', size: 28 },
+        { label: 'Count', name: 'reviewCount', size: 8, map: helpers.toString, align: Alignment.Right },
     ];
 
     if (data.users.length && data.users[0].buckets) {

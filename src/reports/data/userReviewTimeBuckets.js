@@ -54,6 +54,7 @@ function calculateStatistics(name, reviews) {
 
     return {
         name: name,
+        reviewCount: reviewTimes.length,
         buckets: timeBuckets,
     };
 }
