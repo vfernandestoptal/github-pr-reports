@@ -9,6 +9,8 @@ const GithubClient = require('./githubClient');
 const PullRequestTimelineEventType = require('./githubEnums').PullRequestTimelineEventType;
 const MaxRetryCount = config.get('github.api.retries');
 
+const QUERY_PAGE_SIZE = 50;
+
 function getPullRequestsQuery(organization, repository, after, count) {
     return `
         query {
@@ -108,7 +110,7 @@ function getPullRequestsDataPage(options) {
 
     logger.info(`Getting more Pull Requests`);
 
-    const query = getPullRequestsQuery(organization, repository, nextPageCursor, 100);
+    const query = getPullRequestsQuery(organization, repository, nextPageCursor, QUERY_PAGE_SIZE);
 
     return githubClient.query(query)
         .then(response => parsePullRequestsResponse(response))
