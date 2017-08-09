@@ -22,6 +22,7 @@ function getPullRequestsQuery(organization, repository, after, count) {
                     }
                     nodes {
                         number
+                        url
                         state
                         createdAt
                         mergedAt
@@ -186,6 +187,7 @@ function parsePullRequestsResponse(response) {
 
             async.setImmediate(() =>
                 callback(null, {
+                    url: pr.url,
                     author: pr.author.login,
                     createdAt: moment.utc(pr.createdAt),
                     mergedAt: mergeAction && moment.utc(pr.mergedAt) || undefined,

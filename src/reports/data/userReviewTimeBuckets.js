@@ -5,14 +5,16 @@ const bluebird = require('bluebird');
 const moment = require('moment');
 const helpers = require('./helpers');
 
-const config = {
+const configDefaults = {
     bucketSize: 8,
     maxBuckets: 7,
 };
 
-function setConfig(configuration) {
-    config.bucketSize = configuration.bucketSize || config.bucketSize;
-    config.maxBuckets = configuration.maxBuckets || config.maxBuckets;
+function getConfig(config) {
+    return {
+        bucketSize: config.bucketSize || configDefaults.bucketSize,
+        maxBuckets: config.maxBuckets || configDefaults.maxBuckets,
+    };
 }
 
 function getNewUser(username) {
@@ -33,7 +35,7 @@ function groupReviewsByAuthor(pullRequests) {
         }, {});
 }
 
-function calculateStatistics(name, reviews) {
+function calculateStatistics(name, reviews, config) {
     const reviewTimes = reviews
         .filter(review => review.assignedAt && review.submittedAt)
         .map(review => moment.utc(review.submittedAt).diff(moment.utc(review.assignedAt)));
@@ -59,7 +61,8 @@ function calculateStatistics(name, reviews) {
     };
 }
 
-function generate(data) {
+function generate(data, options) {
+    const config = getConfig(options);
     const dataDefered = bluebird.defer();
     const reviewsByAuthor = groupReviewsByAuthor(data.pullRequests);
 
@@ -67,7 +70,7 @@ function generate(data) {
         Object.keys(reviewsByAuthor).sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1),
         (user, callback) => {
             const reviews = reviewsByAuthor[user].reviews;
-            async.setImmediate(() => callback(null, calculateStatistics(user, reviews)));
+            async.setImmediate(() => callback(null, calculateStatistics(user, reviews, config)));
         },
         (err, users) => {
             if (err) {
@@ -75,7 +78,7 @@ function generate(data) {
             }
 
             const allReviews = data.pullRequests.reduce((all, pr) => all.concat(...pr.reviews), []);
-            const totals = calculateStatistics('TOTALS', allReviews);
+            const totals = calculateStatistics('TOTALS', allReviews, config);
             dataDefered.resolve({
                 organization: data.organization,
                 repository: data.repository,
@@ -91,6 +94,5 @@ function generate(data) {
 }
 
 module.exports = {
-    setConfig: setConfig,
     generate: generate,
 };

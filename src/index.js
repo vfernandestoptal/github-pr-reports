@@ -59,16 +59,13 @@ function generateReports(data) {
     reports.forEach(report => {
         const reportData = require(`./reports/data/${report}`);
         const reportDisplay = require(`./reports/display/${report}`);
+        const reportOptions = config.has(`reports.${report}.options`) && config.get(`reports.${report}.options`) || {};
 
-        const reportConfig = config.has(`reports.${report}`) && config.get(`reports.${report}`) || {};
-        reportData.setConfig && reportData.setConfig(reportConfig);
-        reportDisplay.setConfig && reportDisplay.setConfig(reportConfig);
-
-        generateReport(reportData, reportDisplay, data);
+        generateReport(reportData, reportDisplay, data, reportOptions);
     });
 }
 
-function generateReport(dataProcessor, displayProcessor, data) {
-    dataProcessor.generate(data)
-        .then(data => console.log(displayProcessor.generate(data)));
+function generateReport(dataProcessor, displayProcessor, data, options) {
+    dataProcessor.generate(data, options)
+        .then(data => console.log(displayProcessor.generate(data, options)));
 }

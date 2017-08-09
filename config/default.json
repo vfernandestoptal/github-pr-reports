@@ -23,8 +23,10 @@
     },
     "reports": {
         "userReviewTimeBuckets": {
-            "bucketSize": 8,
-            "maxBuckets": 7
+            "options": {
+                "bucketSize": 8,
+                "maxBuckets": 7
+            }
         }
     }
 }
