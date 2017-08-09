@@ -14,11 +14,18 @@ function getNewUser(username) {
 
 function groupReviewsByAuthor(pullRequests) {
     return pullRequests
-        .reduce((reviews, pr) => reviews.concat(...pr.reviews), [])
-        .reduce((users, review) => {
-            const user = users[review.user] || getNewUser(review.user);
-            user.reviews.push(review);
-            users[review.user] = user;
+        .reduce((users, pr) => {
+            pr.reviews.forEach(review => {
+                const user = users[review.user] || getNewUser(review.user);
+                user.reviews.push({
+                    url: pr.url,
+                    assignedAt: review.assignedAt,
+                    submittedAt: review.submittedAt,
+                    reviewHours: moment.duration(moment.utc(review.submittedAt).diff(moment.utc(review.assignedAt))).asHours(),
+                });
+                users[review.user] = user;
+            });
+
             return users;
         }, {});
 }
@@ -52,7 +59,7 @@ function generate(data) {
         Object.keys(reviewsByAuthor).sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1),
         (user, callback) => {
             const reviews = reviewsByAuthor[user].reviews;
-            async.setImmediate(() => callback(null, calculateStatistics(user, reviews)));
+            async.setImmediate(() => callback(null, Object.assign(calculateStatistics(user, reviews), { reviews })));
         },
         (err, users) => {
             if (err) {

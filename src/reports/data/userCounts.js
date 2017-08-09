@@ -37,7 +37,7 @@ function calculateStatistics(name, pullRequests) {
     };
 }
 
-function generate(data) {
+function generate(data, options) {
     const dataDefered = bluebird.defer();
     const pullRequestsByAuthor = groupPullRequestsByAuthor(data.pullRequests);
 
