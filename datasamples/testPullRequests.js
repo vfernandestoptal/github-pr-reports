@@ -45,6 +45,10 @@ const testData = {
                     'state': 'CHANGES_REQUESTED',
                     'assignedAt': '2017-07-28T23:33:42.000Z',
                 },
+                {
+                    'user': 'test',
+                    'assignedAt': '2017-07-28T23:33:45.000Z',
+                },
             ],
         },
     ],

@@ -12,8 +12,8 @@ const configDefaults = {
 
 function getConfig(config) {
     return {
-        bucketSize: config.bucketSize || configDefaults.bucketSize,
-        maxBuckets: config.maxBuckets || configDefaults.maxBuckets,
+        bucketSize: config && config.bucketSize || configDefaults.bucketSize,
+        maxBuckets: config && config.maxBuckets || configDefaults.maxBuckets,
     };
 }
 
@@ -85,7 +85,7 @@ function generate(data, options) {
                 startDate: data.startDate,
                 endDate: data.endDate,
                 generatedOn: data.generatedOn,
-                users: users.filter(user => user.buckets.length > 0),
+                users: users.filter(user => user.reviewCount > 0),
                 totals: totals,
             });
         }
