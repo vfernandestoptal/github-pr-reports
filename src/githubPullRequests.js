@@ -197,7 +197,7 @@ function parsePullRequestsResponse(response) {
                     state: pr.state,
                     totalReviews: totalReviews,
                     reviews: parsePullRequestReviews(pr.timeline.nodes).map(review => {
-                        if (!review.assignedAt) {
+                        if (!review.assignedAt || review.submittedAt < review.assignedAt) {
                             review.assignedAt = moment.utc(pr.createdAt);
                         }
                         return review;
