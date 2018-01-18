@@ -7,6 +7,7 @@ const moment = require('moment');
 const logger = require('./logger');
 const GithubClient = require('./githubClient');
 const PullRequestTimelineEventType = require('./githubEnums').PullRequestTimelineEventType;
+const PullRequestReviewState = require('./githubEnums').PullRequestReviewState;
 const MaxRetryCount = config.get('github.api.retries');
 
 const QUERY_PAGE_SIZE = 50;
@@ -247,15 +248,20 @@ function addReviewRequestEvent(event, reviews) {
 }
 
 function addReviewDoneEvent(event, reviews) {
-    const user = event.author.login;
-    const review = reviews[user] || { user };
+    if (event.state === PullRequestReviewState.APPROVED ||
+        event.state === PullRequestReviewState.CHANGES_REQUESTED ||
+        event.state === PullRequestReviewState.COMMENTED
+    ) {
+        const user = event.author.login;
+        const review = reviews[user] || { user };
 
-    if (!review.state) {
-        review.submittedAt = moment.utc(event.submittedAt);
-        review.state = event.state;
+        if (!review.state) {
+            review.submittedAt = event.submittedAt && moment.utc(event.submittedAt) || null;
+            review.state = event.state;
+        }
+
+        reviews[user] = review;
     }
-
-    reviews[user] = review;
 
     return reviews;
 }
