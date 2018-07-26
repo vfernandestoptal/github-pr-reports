@@ -22,12 +22,12 @@ if (useLiveData) {
             token,
             organization: config.get('project.organization'),
             repository: config.get('project.repo'),
-            startDate: moment.utc('2018-01').startOf('month'),
-            endDate: moment.utc('2018-03').endOf('month'),
+            startDate: moment.utc('2018-06').startOf('month'),
+            endDate: moment.utc('2018-08').endOf('month'),
         })
             .then(data => {
                 fs.writeFileSync(
-                    path.join(__dirname, 'pullRequestsData_2018_Q1.json'),
+                    path.join(__dirname, 'pullRequestsData_2018_Q2.json'),
                     JSON.stringify(data),
                     'utf-8'
                 );

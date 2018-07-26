@@ -3,7 +3,7 @@
 const Winston = require('winston');
 const config = require('config');
 
-const logger = new Winston.Logger({
+const logger = Winston.createLogger({
     transports: [
         new Winston.transports.Console({
             level: config.get('logger.level') || 'info',

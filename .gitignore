@@ -1,5 +1,6 @@
 .env
 .vscode
+dist/
 
 # NPM Modules
 node_modules

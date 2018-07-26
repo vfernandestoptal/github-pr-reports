@@ -1,5 +1,6 @@
 {
-    "extends": "eslint:recommended",
+    "extends": ["plugin:prettier/recommended"],
+    "parser": "typescript-eslint-parser",
     "parserOptions": {
         "sourceType": "module"
     },
@@ -9,40 +10,18 @@
     "root": true,
     "rules": {
         "no-console": "off",
-        "indent": [
-            "error",
-            4,
-            { "SwitchCase": 1 }
-        ],
         "no-tabs": "error",
         "no-trailing-spaces": "error",
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
+        "linebreak-style": ["error", "unix"],
         "eol-last": "error",
         "space-infix-ops": "error",
-        "brace-style": [
-            "error",
-            "stroustrup"
-        ],
         "space-before-blocks": "error",
         "arrow-spacing": "error",
         "keyword-spacing": "error",
         "max-len": "off",
-        "quotes": [
-            "error",
-            "single",
-            { "allowTemplateLiterals": true }
-        ],
-        "comma-dangle": [
-            "error",
-            "always-multiline"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ],
+        "quotes": ["error", "single", { "allowTemplateLiterals": true }],
+        "comma-dangle": ["error", "always-multiline"],
+        "semi": ["error", "always"],
         "camelcase": "error",
         "no-use-before-define": [
             "error",
@@ -58,10 +37,7 @@
                 "maxEOF": 0
             }
         ],
-        "func-style": [
-            "error",
-            "declaration"
-        ],
+        "func-style": ["error", "declaration"],
         "no-var": "error",
         "prefer-const": "error",
         "sort-vars": [

@@ -36,8 +36,11 @@ function getPullRequestsQuery(organization, repository, after, count) {
                             nodes {
                                 __typename
                                 ... on ReviewRequestedEvent {
-                                    subject {
-                                        login
+                                    requestedReviewer {
+                                        __typename
+                                        ... on User {
+                                            login
+                                        }
                                     }
                                     createdAt
                                 }
@@ -236,7 +239,7 @@ function parsePullRequestReviews(events) {
 }
 
 function addReviewRequestEvent(event, reviews) {
-    const user = event.subject.login;
+    const user = event.requestedReviewer.login;
     const review = reviews[user] || { user };
 
     if (!review.assignedAt) {
