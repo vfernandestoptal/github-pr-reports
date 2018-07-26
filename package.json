@@ -4,7 +4,7 @@
     "description": "Generates statistics related to GitHub repository pull requests",
     "main": "dist/index.js",
     "scripts": {
-        "build": "tsc",
+        "build": "rm -r dist/ && tsc",
         "build:watch": "tsc -w",
         "start": "node dist/index.js",
         "lint": "eslint .",
@@ -13,6 +13,9 @@
     },
     "author": "",
     "license": "MIT",
+    "engines": {
+        "node": ">=8.10"
+    },
     "dependencies": {
         "async": "2.6.1",
         "bluebird": "3.5.1",
