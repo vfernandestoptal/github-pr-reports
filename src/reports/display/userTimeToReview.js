@@ -6,12 +6,48 @@ const helpers = require('./helpers');
 
 const userColumns = [
     { label: 'User', name: 'name', size: 28 },
-    { label: 'Count', name: 'reviewCount', size: 8, map: helpers.toString, align: Alignment.Right },
-    { label: 'Median', name: 'medianReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: '-σ', name: 'minDeviationReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: 'Avg', name: 'averageReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: '+σ', name: 'maxDeviationReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
-    { label: 'Std Dev', name: 'standardDeviationReviewTime', size: 8, map: helpers.toHours, align: Alignment.Right },
+    {
+        label: 'Count',
+        name: 'reviewCount',
+        size: 8,
+        map: helpers.toString,
+        align: Alignment.Right,
+    },
+    {
+        label: 'Median',
+        name: 'medianReviewTime',
+        size: 8,
+        map: helpers.toHours,
+        align: Alignment.Right,
+    },
+    {
+        label: '-σ',
+        name: 'minDeviationReviewTime',
+        size: 8,
+        map: helpers.toHours,
+        align: Alignment.Right,
+    },
+    {
+        label: 'Avg',
+        name: 'averageReviewTime',
+        size: 8,
+        map: helpers.toHours,
+        align: Alignment.Right,
+    },
+    {
+        label: '+σ',
+        name: 'maxDeviationReviewTime',
+        size: 8,
+        map: helpers.toHours,
+        align: Alignment.Right,
+    },
+    {
+        label: 'Std Dev',
+        name: 'standardDeviationReviewTime',
+        size: 8,
+        map: helpers.toHours,
+        align: Alignment.Right,
+    },
 ];
 
 function generate(data) {
@@ -22,7 +58,9 @@ Report: Users Time to Review
 ${helpers.generateSectionDivider()}
 
 Project: ${data.organization}/${data.repository}
-Date Period: ${moment(data.startDate).format('LL')} to ${moment(data.endDate).format('LL')}
+Date Period: ${moment(data.startDate).format('LL')} to ${moment(
+        data.endDate
+    ).format('LL')}
 Generated On: ${moment(data.generatedOn).format('LLL')}
 
 ${helpers.generateSectionDivider()}

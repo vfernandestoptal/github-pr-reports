@@ -5,7 +5,9 @@ function getMedian(args) {
     const numbers = args.slice(0).sort((a, b) => a - b);
     const middle = Math.floor(numbers.length / 2);
     const isEven = numbers.length % 2 === 0;
-    return isEven ? (numbers[middle] + numbers[middle - 1]) / 2 : numbers[middle];
+    return isEven
+        ? (numbers[middle] + numbers[middle - 1]) / 2
+        : numbers[middle];
 }
 
 function getAverage(args) {
@@ -36,7 +38,10 @@ function getStandardDeviation(args, avg) {
     if (!args.length) {
         return 0;
     }
-    const total = args.reduce((total, value) => (value - avg) * (value - avg), 0);
+    const total = args.reduce(
+        (total, value) => (value - avg) * (value - avg),
+        0
+    );
     return Math.sqrt(total / args.length);
 }
 

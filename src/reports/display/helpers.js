@@ -13,17 +13,20 @@ function toString(v) {
 }
 
 function toDecimals(places) {
-    return (v) => v.toFixed(places);
+    return v => v.toFixed(places);
 }
 
 function toHours(v) {
-    return moment.duration(v).asHours().toFixed(2);
+    return moment
+        .duration(v)
+        .asHours()
+        .toFixed(2);
 }
 
 function alignText(text, column) {
-    return column.align === Alignment.Right ?
-        pad(column.size, text) :
-        pad(text, column.size);
+    return column.align === Alignment.Right
+        ? pad(column.size, text)
+        : pad(text, column.size);
 }
 
 function format(value, column) {
@@ -36,15 +39,11 @@ function generateTableHeaders(columns) {
 }
 
 function generateTableLine(line, columns) {
-    return columns
-        .map(column => format(line[column.name], column))
-        .join(' | ');
+    return columns.map(column => format(line[column.name], column)).join(' | ');
 }
 
 function generateTableLines(data, columns) {
-    return data
-        .map(line => generateTableLine(line, columns))
-        .join('\r\n');
+    return data.map(line => generateTableLine(line, columns)).join('\r\n');
 }
 
 function generateReportDivider() {

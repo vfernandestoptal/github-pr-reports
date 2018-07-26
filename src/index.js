@@ -27,7 +27,7 @@ if (useLiveData) {
             })
             .then(data => {
                 fs.writeFileSync(
-                    path.join(__dirname, 'pullRequestsData.json'),
+                    path.join(__dirname, '..', 'pullRequestsData.json'),
                     JSON.stringify(data),
                     'utf-8'
                 );
@@ -36,7 +36,7 @@ if (useLiveData) {
             .catch(error => console.log('ERROR', error));
     });
 } else {
-    const dataFile = path.join(__dirname, 'pullRequestsData.json');
+    const dataFile = path.join(__dirname, '..', 'pullRequestsData.json');
     const data = JSON.parse(fs.readFileSync(dataFile, 'utf-8'));
 
     generateReports(data);

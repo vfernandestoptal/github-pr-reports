@@ -95,9 +95,8 @@ test('generate returns a promise', t => {
 test('generate returns the correct report data', t => {
     t.plan(2);
 
-    return sut.generate(testData)
-        .then(data => {
-            t.truthy(data);
-            t.deepEqual(data, expectedData);
-        });
+    return sut.generate(testData).then(data => {
+        t.truthy(data);
+        t.deepEqual(data, expectedData);
+    });
 });

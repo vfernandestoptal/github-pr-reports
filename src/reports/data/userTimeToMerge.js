@@ -23,14 +23,19 @@ function groupPullRequestsByAuthor(pullRequests) {
 }
 
 function calculateStatistics(name, pullRequests) {
-    const mergedPullRequests = pullRequests
-        .filter(pr => pr.state === enums.PullRequestState.MERGED);
+    const mergedPullRequests = pullRequests.filter(
+        pr => pr.state === enums.PullRequestState.MERGED
+    );
 
-    const mergedTimes = mergedPullRequests
-        .map(pr => moment.utc(pr.mergedAt).diff(moment.utc(pr.createdAt)));
+    const mergedTimes = mergedPullRequests.map(pr =>
+        moment.utc(pr.mergedAt).diff(moment.utc(pr.createdAt))
+    );
 
     const avgMergeTime = helpers.getAverage(mergedTimes);
-    const stdevMergeTime = helpers.getStandardDeviation(mergedTimes, avgMergeTime);
+    const stdevMergeTime = helpers.getStandardDeviation(
+        mergedTimes,
+        avgMergeTime
+    );
 
     return {
         name: name,
@@ -50,14 +55,20 @@ function generate(data) {
     const pullRequestsByAuthor = groupPullRequestsByAuthor(data.pullRequests);
 
     async.map(
-        Object.keys(pullRequestsByAuthor).sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1),
+        Object.keys(pullRequestsByAuthor).sort(
+            (a, b) => (a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1)
+        ),
         (user, callback) => {
             const pullRequests = pullRequestsByAuthor[user].pullRequests;
-            async.setImmediate(() => callback(null, calculateStatistics(user, pullRequests)));
+            async.setImmediate(() =>
+                callback(null, calculateStatistics(user, pullRequests))
+            );
         },
         (err, users) => {
             if (err) {
-                return dataDefered.reject(new Error('Error generating report data'));
+                return dataDefered.reject(
+                    new Error('Error generating report data')
+                );
             }
 
             const totals = calculateStatistics('TOTALS', data.pullRequests);

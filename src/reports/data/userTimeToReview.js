@@ -13,30 +13,40 @@ function getNewUser(username) {
 }
 
 function groupReviewsByAuthor(pullRequests) {
-    return pullRequests
-        .reduce((users, pr) => {
-            pr.reviews.forEach(review => {
-                const user = users[review.user] || getNewUser(review.user);
-                user.reviews.push({
-                    url: pr.url,
-                    assignedAt: review.assignedAt,
-                    submittedAt: review.submittedAt,
-                    reviewHours: moment.duration(moment.utc(review.submittedAt).diff(moment.utc(review.assignedAt))).asHours(),
-                });
-                users[review.user] = user;
+    return pullRequests.reduce((users, pr) => {
+        pr.reviews.forEach(review => {
+            const user = users[review.user] || getNewUser(review.user);
+            user.reviews.push({
+                url: pr.url,
+                assignedAt: review.assignedAt,
+                submittedAt: review.submittedAt,
+                reviewHours: moment
+                    .duration(
+                        moment
+                            .utc(review.submittedAt)
+                            .diff(moment.utc(review.assignedAt))
+                    )
+                    .asHours(),
             });
+            users[review.user] = user;
+        });
 
-            return users;
-        }, {});
+        return users;
+    }, {});
 }
 
 function calculateStatistics(name, reviews) {
     const reviewTimes = reviews
         .filter(review => review.assignedAt && review.submittedAt)
-        .map(review => moment.utc(review.submittedAt).diff(moment.utc(review.assignedAt)));
+        .map(review =>
+            moment.utc(review.submittedAt).diff(moment.utc(review.assignedAt))
+        );
 
     const avgReviewTime = helpers.getAverage(reviewTimes);
-    const stdevReviewTime = helpers.getStandardDeviation(reviewTimes, avgReviewTime);
+    const stdevReviewTime = helpers.getStandardDeviation(
+        reviewTimes,
+        avgReviewTime
+    );
 
     return {
         name: name,
@@ -56,17 +66,31 @@ function generate(data) {
     const reviewsByAuthor = groupReviewsByAuthor(data.pullRequests);
 
     async.map(
-        Object.keys(reviewsByAuthor).sort((a, b) => a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1),
+        Object.keys(reviewsByAuthor).sort(
+            (a, b) => (a.toLowerCase() < b.toLocaleLowerCase() ? -1 : 1)
+        ),
         (user, callback) => {
             const reviews = reviewsByAuthor[user].reviews;
-            async.setImmediate(() => callback(null, Object.assign(calculateStatistics(user, reviews), { reviews })));
+            async.setImmediate(() =>
+                callback(
+                    null,
+                    Object.assign(calculateStatistics(user, reviews), {
+                        reviews,
+                    })
+                )
+            );
         },
         (err, users) => {
             if (err) {
-                return dataDefered.reject(new Error('Error generating report data'));
+                return dataDefered.reject(
+                    new Error('Error generating report data')
+                );
             }
 
-            const allReviews = data.pullRequests.reduce((all, pr) => all.concat(...pr.reviews), []);
+            const allReviews = data.pullRequests.reduce(
+                (all, pr) => all.concat(...pr.reviews),
+                []
+            );
             const totals = calculateStatistics('TOTALS', allReviews);
             dataDefered.resolve({
                 organization: data.organization,
