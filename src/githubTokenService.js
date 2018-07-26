@@ -23,7 +23,11 @@ function getToken(callback) {
     }
 
     if (!apiKey || !apiSecret) {
-        return callback(new Error('No Api key/secret specified. Please set GITHUB_API_KEY and GITHUB_API_SECRET env variables.'));
+        return callback(
+            new Error(
+                'No Api key/secret specified. Please set GITHUB_API_KEY and GITHUB_API_SECRET env variables.'
+            )
+        );
     }
 
     let browserProc;
@@ -41,8 +45,9 @@ function getToken(callback) {
 
     const opn = require('opn');
 
-    opn(`${baseUrl}:${port}${loginUri}`, { wait: false })
-        .then(proc => browserProc = proc);
+    opn(`${baseUrl}:${port}${loginUri}`, { wait: false }).then(
+        proc => (browserProc = proc)
+    );
 }
 
 function startTokenServer(callback) {

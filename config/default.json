@@ -15,8 +15,8 @@
         }
     },
     "project": {
-        "organization": "vroozi",
-        "repo": "purchasing-manager"
+        "organization": "angular",
+        "repo": "angular"
     },
     "logger": {
         "level": "debug"

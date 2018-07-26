@@ -4,12 +4,12 @@
     "description": "Generates statistics related to GitHub repository pull requests",
     "main": "dist/index.js",
     "scripts": {
-        "build": "rm -r dist/ && tsc",
+        "build": "rm -rf dist/ && tsc",
         "build:watch": "tsc -w",
         "start": "node dist/index.js",
         "lint": "eslint .",
-        "test": "ava",
-        "tdd": "ava --watch"
+        "test": "ava -v",
+        "tdd": "ava --watch -v"
     },
     "author": "",
     "license": "MIT",
@@ -30,7 +30,10 @@
         "winston": "3.0.0"
     },
     "devDependencies": {
+        "@types/async": "2.0.49",
+        "@types/bluebird": "3.5.23",
         "@types/config": "0.0.34",
+        "@types/moment": "2.13.0",
         "@types/node": "8.10.21",
         "ava": "0.25.0",
         "eslint": "5.2.0",
