@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const ghTokens = require('./githubTokenService');
-const pullRequests = require('./pullRequests/githubPullRequests');
+const pullRequests = require('./pullRequests');
 
 const useLiveData = process.env.LIVE || false;
 
@@ -20,6 +20,8 @@ if (useLiveData) {
         pullRequests
             .getPullRequestsData({
                 token,
+                maxRetryCount: config.get('github.api.retries'),
+                pageSize: config.get('github.api.pageSize'),
                 organization: config.get('project.organization'),
                 repository: config.get('project.repo'),
                 startDate: moment.utc('2018-07').startOf('month'),

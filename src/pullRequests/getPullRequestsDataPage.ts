@@ -2,16 +2,15 @@ import async from 'async';
 import moment from 'moment';
 
 import logger from '../logger';
-import { getPullRequestsQuery } from './getPullRequestsQuery';
-
+import getPullRequestsQuery from './getPullRequestsQuery';
+import parsePullRequestReviews from './parsePullRequestReviews';
+import PullRequestEvent, { PullRequestMergedEvent } from './PullRequestEvent';
 import PullRequest from '../types/PullRequest';
-import PullRequestReview from '../types/PullRequestReview';
 import GithubClient from '../types/GithubClient';
 import RepositoryDatePeriod from '../types/RepositoryDatePeriod';
 import PullRequestTimelineEventType from '../types/PullRequestTimelineEventType';
-import PullRequestReviewState from '../types/PullRequestReviewState';
 
-export async function getPullRequestsDataPage(
+export default async function getPullRequestsDataPage(
     options: PullRequestPageOptions
 ): Promise<PullRequest[]> {
     const {
@@ -107,140 +106,57 @@ function parsePullRequestsResponse(
     logger.info(`Parsing another ${data.length} Pull Requests`);
 
     return new Promise((resolve, reject) => {
-        async.map(
-            data,
-            (pr: PullRequestNode, callback) => {
-                logger.debug(
-                    `Parsing Pull Request ${pr.number} from ${
-                        pr.author.login
-                    } created at ${pr.createdAt}`
-                );
-
-                const mergeAction: PullRequestMergedEvent | null = pr.timeline.nodes.find(
-                    event =>
-                        event.__typename ===
-                        PullRequestTimelineEventType.MergedEvent
-                ) as PullRequestMergedEvent;
-                const totalReviews = pr.timeline.nodes.filter(
-                    event =>
-                        event.__typename ===
-                        PullRequestTimelineEventType.PullRequestReview
-                ).length;
-
-                async.setImmediate(() =>
-                    callback(void 0, {
-                        url: pr.url,
-                        author: pr.author.login,
-                        createdAt: moment.utc(pr.createdAt),
-                        mergedAt:
-                            (mergeAction && moment.utc(pr.mergedAt)) ||
-                            undefined,
-                        mergedBy:
-                            (mergeAction && mergeAction.actor.login) ||
-                            undefined,
-                        baseRefName: pr.baseRefName,
-                        headRefName: pr.headRefName,
-                        state: pr.state,
-                        totalReviews: totalReviews,
-                        reviews: parsePullRequestReviews(pr.timeline.nodes).map(
-                            review => {
-                                if (
-                                    !review.assignedAt ||
-                                    (review.submittedAt &&
-                                        review.submittedAt < review.assignedAt)
-                                ) {
-                                    review.assignedAt = moment.utc(
-                                        pr.createdAt
-                                    );
-                                }
-                                return review;
-                            }
-                        ),
-                    })
-                );
-            },
-            (err, pullRequests) => {
-                if (err) {
-                    return reject(new Error('Error parsing data'));
-                }
-
-                resolve({
-                    data: pullRequests as PullRequest[],
-                    next: nextPageCursor,
-                });
+        async.map(data, parsePullRequest, (err, pullRequests) => {
+            if (err) {
+                return reject(new Error('Error parsing data'));
             }
-        );
+
+            resolve({
+                data: pullRequests as PullRequest[],
+                next: nextPageCursor,
+            });
+        });
     });
 }
 
-function parsePullRequestReviews(
-    events: PullRequestEvent[]
-): PullRequestReview[] {
-    const reviews = events.reduce(
-        (reviews: PullRequestReviewsMap, event: PullRequestEvent) => {
-            if (
-                event.__typename ===
-                PullRequestTimelineEventType.ReviewRequestedEvent
-            ) {
-                reviews = addReviewRequestEvent(
-                    event as PullRequestReviewRequestedEvent,
-                    reviews
-                );
-            } else if (
-                event.__typename ===
-                PullRequestTimelineEventType.PullRequestReview
-            ) {
-                reviews = addReviewDoneEvent(
-                    event as PullRequestReviewEvent,
-                    reviews
-                );
-            }
-
-            return reviews;
-        },
-        {}
+function parsePullRequest(pr: PullRequestNode, callback) {
+    logger.debug(
+        `Parsing Pull Request ${pr.number} from ${pr.author.login} created at ${
+            pr.createdAt
+        }`
     );
 
-    return Object.keys(reviews).map(user => reviews[user]);
+    async.setImmediate(() =>
+        callback(void 0, {
+            url: pr.url,
+            author: pr.author.login,
+            createdAt: moment.utc(pr.createdAt),
+            baseRefName: pr.baseRefName,
+            headRefName: pr.headRefName,
+            state: pr.state,
+            ...getMergeActionDetails(pr),
+            totalReviews: getTotalReviews(pr),
+            reviews: parsePullRequestReviews(pr.timeline.nodes, pr.createdAt),
+        })
+    );
 }
 
-function addReviewRequestEvent(
-    event: PullRequestReviewRequestedEvent,
-    reviews: PullRequestReviewsMap
-): PullRequestReviewsMap {
-    const user = event.requestedReviewer.login;
-    const review = reviews[user] || { user };
+function getMergeActionDetails(pr) {
+    const mergeAction = pr.timeline.nodes.find(
+        event => event.__typename === PullRequestTimelineEventType.MergedEvent
+    ) as PullRequestMergedEvent;
 
-    if (!review.assignedAt) {
-        review.assignedAt = moment.utc(event.createdAt);
-    }
-    reviews[user] = review;
-
-    return reviews;
+    return {
+        mergedAt: (mergeAction && moment.utc(pr.mergedAt)) || undefined,
+        mergedBy: (mergeAction && mergeAction.actor.login) || undefined,
+    };
 }
 
-function addReviewDoneEvent(
-    event: PullRequestReviewEvent,
-    reviews: PullRequestReviewsMap
-): PullRequestReviewsMap {
-    if (
-        event.state === PullRequestReviewState.APPROVED ||
-        event.state === PullRequestReviewState.CHANGES_REQUESTED ||
-        event.state === PullRequestReviewState.COMMENTED
-    ) {
-        const user = event.author.login;
-        const review = reviews[user] || { user };
-
-        if (!review.state) {
-            review.submittedAt =
-                (event.submittedAt && moment.utc(event.submittedAt)) || null;
-            review.state = event.state;
-        }
-
-        reviews[user] = review;
-    }
-
-    return reviews;
+function getTotalReviews(pr) {
+    return pr.timeline.nodes.filter(
+        event =>
+            event.__typename === PullRequestTimelineEventType.PullRequestReview
+    ).length;
 }
 
 interface PullRequestPageOptions extends RepositoryDatePeriod {
@@ -281,38 +197,7 @@ interface PullRequestNode {
     };
 }
 
-type PullRequestEvent =
-    | PullRequestReviewRequestedEvent
-    | PullRequestReviewEvent
-    | PullRequestMergedEvent;
-
-interface PullRequestReviewRequestedEvent {
-    __typename: PullRequestTimelineEventType.ReviewRequestedEvent;
-    requestedReviewer: GithubUser;
-    createdAt: string;
-}
-
-interface PullRequestReviewEvent {
-    __typename: PullRequestTimelineEventType.PullRequestReview;
-    state: string;
-    author: GithubUser;
-    submittedAt: string;
-}
-
-interface PullRequestMergedEvent {
-    __typename: PullRequestTimelineEventType.MergedEvent;
-    actor: GithubUser;
-}
-
-interface GithubUser {
-    login: string;
-}
-
 interface PullRequestsPage {
     data: PullRequest[];
     next?: string;
-}
-
-interface PullRequestReviewsMap {
-    [user: string]: PullRequestReview;
 }

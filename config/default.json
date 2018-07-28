@@ -11,7 +11,8 @@
             "key": "",
             "secret": "",
             "token": "",
-            "retries": 3
+            "retries": 3,
+            "pageSize": 50
         }
     },
     "project": {

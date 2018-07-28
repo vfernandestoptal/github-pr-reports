@@ -1,4 +1,4 @@
-export function getPullRequestsQuery(
+export default function getPullRequestsQuery(
     organization: string,
     repository: string,
     after: string | null | undefined,
