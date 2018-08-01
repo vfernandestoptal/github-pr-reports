@@ -8,7 +8,7 @@ import PullRequestEvent, { PullRequestMergedEvent } from './PullRequestEvent';
 import PullRequest from '../types/PullRequest';
 import GithubClient from '../types/GithubClient';
 import RepositoryDatePeriod from '../types/RepositoryDatePeriod';
-import PullRequestTimelineEventType from '../types/PullRequestTimelineEventType';
+import PullRequestTimelineEventType from '../types/github/PullRequestTimelineEventType';
 
 export default async function getPullRequestsDataPage(
     options: PullRequestPageOptions

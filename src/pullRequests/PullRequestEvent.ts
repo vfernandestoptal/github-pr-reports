@@ -1,4 +1,4 @@
-import PullRequestTimelineEventType from '../types/PullRequestTimelineEventType';
+import PullRequestTimelineEventType from '../types/github/PullRequestTimelineEventType';
 
 export interface GithubUser {
     login: string;

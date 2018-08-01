@@ -1,8 +1,8 @@
 import moment from 'moment';
 
 import PullRequestReview from '../types/PullRequestReview';
-import PullRequestTimelineEventType from '../types/PullRequestTimelineEventType';
-import PullRequestReviewState from '../types/PullRequestReviewState';
+import PullRequestTimelineEventType from '../types/github/PullRequestTimelineEventType';
+import PullRequestReviewState from '../types/github/PullRequestReviewState';
 import PullRequestEvent from './PullRequestEvent';
 
 interface PullRequestReviewsMap {
