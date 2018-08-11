@@ -1,6 +1,8 @@
 .env
 .vscode
 dist/
+coverage/
+.nyc_output
 
 # NPM Modules
 node_modules
